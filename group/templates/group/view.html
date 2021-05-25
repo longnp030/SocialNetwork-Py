@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ group.name }}{% endblock %}
+
+{% block full_view %}
+<div class="container col-md-12" style="margin-top: 10px; color: azure;">
+    <div class="group-header col-md-12 container-fluid" style="background-color: #242526; border-radius: 10px; padding: 10px;">
+        <div class="group-cover col-md-12">
+            <img src="{{ group.cover_image.url }}" width="1268" height="480" style="border-radius: 10px;">
+        </div>
+
+        <div class="col-md-12 container-fluid">
+            <div class="group-name-privacy-membercount col-md-6">
+                <div class="group-name row" style="padding-left: 15px;">
+                    <h1>{{ group.name }}</h1>
+                </div>
+                <div class="privacy-member-count row">
+                    <span class="group-privacy col-md-6">
+                        {% if group.privacy == "Public" %}
+                            <h4>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe" viewBox="0 0 16 16">
+                                    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/>
+                                </svg>
+                                {{ group.privacy }} group
+                            </h4>
+                        {% elif group.privacy == "Private" %}
+                            <h4>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+                                    <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                                </svg>
+                                {{ group.privacy }} group
+                            </h4>
+                        {% else %}
+                            <h4>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe" viewBox="0 0 16 16">
+                                    <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/>
+                                </svg>
+                                {{ group.privacy }} group
+                            </h4>
+                        {% endif %}
+                    </span>
+                    <span class="member-count col-md-6"><h4>{{ group.members.all.count }} members</h4></span>
+                </div>
+            </div>
+            <div class="header-show-members col-md-6" style="margin-top: 20px; margin-bottom: 10px;">
+                <span class="header-member col-md-12">
+                    {% for member in group.members.all|slice:":5" %}
+                        <a href="{% url 'user:user_profile' member.id %}">
+                            {% if member.avatar %}
+                                <img src="{{ member.avatar.url }}" width="40" height="40" style="border-radius: 40px; margin-left: 0px;">
+                            {% else %}
+                                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" width="40" height="40" style="border-radius: 40px;">
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </span>
+                
+                <div class="col-md-12 container-fluid" style="padding-left: 0 !important; padding-top: 10px;">
+                    {% if is_admin %}
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-info btn-block" id="editgrbtn" data-toggle="modal" data-target="#edit-group">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                                    <path d="M13.498.795l.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001z"/>
+                                </svg>
+                                Edit group info
+                            </button>
+                            <div class="modal fade" id="edit-group" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content" style="background-color: #242526;">
+                                        <div class="modal-body">
+                                            <form method="POST" id="group_change_form" enctype="multipart/form-data" style="color: black;">
+                                                {% csrf_token %}
+                                                {{ edit_group_form }}
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary" form="group_change_form">Save changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-success btn-block" id="invitetogrbtn" data-toggle="modal" data-target="#invite-member">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                                <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                            </svg>
+                            Invite
+                        </button>
+                        <div class="modal fade" id="invite-member" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content" style="background-color: #242526;">
+                                    <div class="modal-body">
+                                        <form method="POST" id="invite-member-form" style="color: black;">
+                                            {% csrf_token %}
+                                            {{ invite_member_form }}
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary" form="invite-member-form">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <form action="{% url 'group:leave_group' group.id %}" method="GET">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-block" id="leavegrbtn" onclick="return confirm('Are you sure?')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
+                                </svg>
+                                Leave this group
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="group-content col-md-12">
+        <div class="group-posts col-md-7" style="margin-top: 20px;">
+            {% if is_admin %}
+                <div class="group-pending-join-request col-md-12 container-fluid" style="background-color: #242526; border-radius: 10px; margin-bottom: 20px; padding: 10px 10px 10px 10px; vertical-align: middle;">
+                    {% if pending_join_requests|length > 0 %}
+                        <h4>Pending requests</h4>
+                        {% for pending_join_request in pending_join_requests %}
+                            <div class="col-md-3 request-from-name" style="padding-top: 6px; font-size: large;">From <b onclick="window.location='/user/{{ pending_join_request.sender.id }}'" role="button">{{ pending_join_request.sender.username }}</b></div>
+                            <div class="col-md-5 request-from-when" style="padding-top: 9px; font-size: larger;">at {{ pending_join_request.sent }}</div>
+                            <div class="col-md-2">
+                                <form action="{% url 'group:accept_join_group_request' user_id=pending_join_request.sender.id group_id=pending_join_request.group.id %}" method="GET">
+                                    {% csrf_token %}
+                                    <button class="btn btn-success btn-block" id="acceptjoingrreq" type="submit">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        </svg>
+                                        Accept
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-2">
+                                <form action="{% url 'group:reject_join_group_request' user_id=pending_join_request.sender.id group_id=pending_join_request.group.id %}" method="GET">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger btn-block" id="rejectjoingrreq" type="submit" onclick="return confirm('Are you sure?')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                        </svg>
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <h4>No pending request at the moment.</h4>
+                    {% endif %}
+                </div>
+            {% endif %}
+            <div class="group-create-new-post col-md-12 container-fluid" style="background-color: #242526; border-radius: 10px;">
+                <a class="btn btn-link col-md-12" href="{% url 'post:create_post' group.id %}" style="width: 100%;"><h3 style="margin-top: 10px">
+                    Post something to this group
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                    </svg>
+                </h3></a><hr>
+            </div>
+            <div class="group-posts col-md-12">
+                {% for post in posts %}
+                    {% include 'post/post_view.html' with view=post.view post_id=post.post.id me=user post=post.post liked=post.liked reactions=post.reactions comments=post.comments %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="group-information-images col-md-5">
+            <div class="group-information col-md-12" style="background-color: #242526; border-radius: 10px; margin-top: 20px;">
+                <h1 style="padding-left: 15px; margin-top: 10px;">About this group</h1>
+                <div class="group-description col-md-12">
+                    <h3>{{ group.description }}</h3>
+                    {% if group.privacy == "Public" %}
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe" viewBox="0 0 16 16">
+                                <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/>
+                            </svg>
+                            {{ group.privacy }}
+                        </h4>
+                        <h5 style="padding-left: 21px;">Everyone can see posts but only members can interact with posts.</h5>
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                            </svg>
+                            Searchability
+                        </h4>
+                        <h5 style="padding-left: 21px;">Everyone can search for this group.</h5>
+                    {% else %}
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                            </svg>
+                            {{ group.privacy }}
+                        </h4>
+                        <h5 style="padding-left: 21px;">Only members can access to this group.</h5>
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-slash-fill" viewBox="0 0 16 16">
+                                <path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.027 7.027 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.088z"/>
+                                <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829zm3.171 6l-12-12 .708-.708 12 12-.708.707z"/>
+                              </svg>
+                            Searchability
+                        </h4>
+                        <h5 style="padding-left: 21px;">Only members can search for this group.</h5>
+                    {% endif %}
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                        </svg>
+                        Created at {{ group.created }}
+                    </h4>
+                </div>
+            </div>
+            <div class="group-image col-md-12" style="background-color: #242526; border-radius: 10px; margin-top: 20px;">
+                <h1 style="padding-left: 15px;">Latest shared media</h1>
+                {% for image in all_images %}{% with image=image.image%}
+                    <div class="col-md-4" style="margin-bottom: 45px;">
+                        <img src="{{ image.image.url }}" width="116" height="116" role="button" data-toggle="modal" data-target="#view-image-{{ image.id }}">
+                        <div class="modal fade" id="view-image-{{ image.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content" style="background-color: #242526; width: 600px;">
+                                    <div class="modal-body">
+                                        <img src="{{ image.image.url }}" width="570" height="600">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endwith %}{% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

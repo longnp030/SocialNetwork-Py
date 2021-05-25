@@ -1,0 +1,7 @@
+https://djangokatya.wordpress.com/2020/10/26/500-internal-server-error-daphne-http-processing-error/
+https://stackoverflow.com/questions/10003706/convert-string-array-representation-back-to-an-array
+https://www.w3schools.com/js/js_loop_for.asp
+https://www.geeksforgeeks.org/how-to-pass-data-to-javascript-in-django-framework/
+https://stackoverflow.com/questions/7536074/django-template-for-loop-iterating-two-item
+https://www.w3schools.com/bootstrap/bootstrap_carousel.asp
+https://stackoverflow.com/questions/6492952/how-can-i-pass-optional-arguments-in-django-view

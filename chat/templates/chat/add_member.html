@@ -1,0 +1,7 @@
+{% if form %}
+<form method="POST" enctype='Multipart/form-data'>
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit">Add</button>
+</form>
+{% endif %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Create new group{% endblock %}
+
+{% block main_content %}
+{% if form %}
+    <form method="POST" enctype='Multipart/form-data'>
+        {% csrf_token %}
+        {{ form }}
+        <div class="btn-comfirm">
+            <button type="submit" class="btn btn-primary ">
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+            </button>
+        </div>
+    </form>
+{% endif %}
+{% endblock %}

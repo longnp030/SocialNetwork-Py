@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+<div class="col-md-12">
+    {% if user.is_authenticated %}
+        <a class="btn btn-link btn-block" href="{% url 'post:create_post' %}" style="background-color: #242526; border-radius: 10px; margin-top: 10px;"><h3>
+            Create new post
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+            </svg>
+        </h3></a><hr>
+
+        <h3 style="color: aliceblue;">Newsfeed</h3>
+        {% if posts %}
+            <div  id='more-posts'>
+                {% for post in posts %}
+                    {% include 'post/post_view.html' with view=post.view post_id=post.post.id me=user post=post.post reactions=post.reactions comments=post.comments %}
+                {% endfor %}
+            </div>
+            <div>
+                <a id="lazyLoadLink" 
+                    href="javascript:void(0);" 
+                    data-page="2">Load More Posts</a>
+            </div>
+
+            <script>
+                (function($) {
+                    $('#lazyLoadLink').on('click', function() {
+                        var link = $(this);
+                        var page = link.data('page');
+                        $.ajax({
+                            type: 'post',
+                            url: '',
+                            data: {
+                                'page': page,
+                                'csrfmiddlewaretoken': window.CSRF_TOKEN // from index.html
+                        },
+                        success: function(data) {
+                            // if there are still more pages to load,
+                            // add 1 to the "Load More Posts" link's page data attribute
+                            // else hide the link
+                            if (data.has_next) {
+                                link.data('page', page+1);
+                            } else {
+                                link.hide();
+                            }
+                            // append html to the posts div
+                            $('#more-posts').append(data.posts);
+                        },
+                        error: function(xhr, status, error) {
+                            // shit happens friends!
+                        }
+                        });
+                    });
+                }(jQuery));
+            </script>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block page_shortcuts %}
+<div class="col-md-12 container-fluid" style="padding: 0 !important; overflow: auto; max-height: 625px;">
+    {% if user.is_authenticated %}
+        <a class="col-md-12 leftnav-btn" style="padding-left: 0 !important; padding-bottom: 15px; padding-top: 10px;" href="{% url 'user:user_profile' me.id %}">
+            <span class="user-avatar col-md-2" style="padding: 0 !important;">
+                {% if me.avatar %}
+                    <img src="{{ me.avatar.url }}" width="30" height="30" style="border-radius: 50px;">
+                {% endif %}
+            </span>
+            <span class="username col-md-10" style="color: aliceblue; font-size: large; padding-top: 5px;">
+                <b>{{ me.username }}</b>
+            </span>
+        </a>
+        <a class="col-md-12 leftnav-btn" href="" style="padding-left: 0 !important; padding-bottom: 10px; padding-top: 10px;">
+            <span class="col-md-2" style="padding: 0 !important;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                    <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                    <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                </svg>
+            </span>
+            <span class="col-md-10" style="color: aliceblue; font-size: larger; padding-top: 5px;">
+                Friends
+            </span>
+        </a>
+        <a class="col-md-12 leftnav-btn" href="{% url 'chat:messenger' %}" style="padding-left: 0 !important; padding-bottom: 10px; padding-top: 10px;">
+            <span class="col-md-2" style="padding: 0 !important;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-lightning-fill" viewBox="0 0 16 16">
+                    <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
+                </svg>
+            </span>
+            <span class="col-md-10" style="color: aliceblue; font-size: larger; padding-top: 5px;">
+                Messenger
+            </span>
+        </a>
+        <a class="col-md-12 leftnav-btn" href="{% url 'group:explore' %}" style="padding-left: 0 !important; padding-bottom: 10px; padding-top: 10px;">
+            <span class="col-md-2" style="padding: 0 !important;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-peace-fill" viewBox="0 0 16 16">
+                    <path d="M14 13.292A8 8 0 0 0 8.5.015v7.778l5.5 5.5zm-.708.708L8.5 9.206v6.778a7.967 7.967 0 0 0 4.792-1.986zM7.5 15.985V9.207L2.708 14A7.967 7.967 0 0 0 7.5 15.985zM2 13.292A8 8 0 0 1 7.5.015v7.778l-5.5 5.5z"/>
+                </svg>
+            </span>
+            <span class="col-md-10" style="color: aliceblue; font-size: larger; padding-top: 5px;">
+                Groups
+            </span>
+        </a>
+        <a class="col-md-12 leftnav-btn" href="" style="padding-left: 0 !important; padding-bottom: 10px; padding-top: 10px;">
+            <span class="col-md-2" style="padding: 0 !important;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-flag-fill" viewBox="0 0 16 16">
+                    <path d="M14.778.085A.5.5 0 0 1 15 .5V8a.5.5 0 0 1-.314.464L14.5 8l.186.464-.003.001-.006.003-.023.009a12.435 12.435 0 0 1-.397.15c-.264.095-.631.223-1.047.35-.816.252-1.879.523-2.71.523-.847 0-1.548-.28-2.158-.525l-.028-.01C7.68 8.71 7.14 8.5 6.5 8.5c-.7 0-1.638.23-2.437.477A19.626 19.626 0 0 0 3 9.342V15.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 1 0v.282c.226-.079.496-.17.79-.26C4.606.272 5.67 0 6.5 0c.84 0 1.524.277 2.121.519l.043.018C9.286.788 9.828 1 10.5 1c.7 0 1.638-.23 2.437-.477a19.587 19.587 0 0 0 1.349-.476l.019-.007.004-.002h.001"/>
+                </svg>  
+            </span>
+            <span class="col-md-10" style="color: aliceblue; font-size: larger; padding-top: 5px;">
+                Pages
+            </span>
+        </a>
+        <hr class="col-md-12 leftnav-btn" style="padding: 0 !important;">
+
+        <h3 style="color: aliceblue;">Your groups</h3>
+        {% if my_groups %}
+            {% for group in my_groups %}
+            <a class="col-md-12 leftnav-btn" href="{% url 'group:view' group.id %}" style="padding-left: 0 !important; padding-bottom: 15px; padding-top: 10px;">
+                <span class="group-cover col-md-2" style="padding: 0 !important;">
+                    {% if group.cover_image %}
+                        <img src="{{ group.cover_image.url }}" width="30" height="30" style="border-radius: 50px;">
+                    {% endif %}
+                </span>
+                <span class="username col-md-10" style="color: aliceblue; font-size: large; padding-top: 5px;">
+                    <b>{{ group.name }}</b>
+                </span>
+            </a>
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block contact %}
+<div class="col-md-12 friends" style="color: azure; margin-top: 10px;">
+    <h3 style="margin-top: 0px;">Friends</h3>
+    <!--<div class="friends-status col-md-12" id="friends-status">
+        {#{% if online_users %}
+            {% for online_user in online_users %}
+                <div class="col-md-12 a-friend" id="online-status-{{ online_user.id }}" onclick="window.location='/user/{{ online_user.id }}'" role="button">
+                    <span>{{ online_user }}</span>
+                    <span><img src="https://img.icons8.com/emoji/48/000000/green-circle-emoji.png" width="15" height="15"></span>
+                </div>
+            {% endfor %}
+        {% endif %}#}
+    </div>-->
+</div>
+{% endblock %}

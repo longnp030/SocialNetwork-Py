@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block messenger %}
+<div class="container-fluid col-md-12 messenger" style="padding-left: 0 !important;">
+    <div class="container-fluid col-md-12 inner-chats" style="background-color: #1d1f21; color: azure; padding-bottom: 10px; border-radius: 10px; overflow: auto;">
+        <h1 style="margin-bottom: 20px;">Messenger</h1>
+        <div class="private-msg col-md-12" style="background-color: #242526; border-radius: 10px; padding-bottom: 10px;">
+            <h2 style="margin-bottom: 10px; margin-top: 10px; padding-bottom: 10px;">Private</h2>
+            {% if personnal_chats %}
+                {% for chat in personnal_chats %}
+                <div class="col-md-12" style="padding-bottom: 10px;">
+                    <a class="col-md-10 a-chat btn btn-link btn-block" href="{% url 'chat:room' chat.receiver_id %}" style="text-align: left; padding-left: 0 !important;">{{ chat.chat }}</a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="private-msg col-md-12" style="background-color: #242526; margin-top: 20px; border-radius: 10px; padding-bottom: 10px;">
+            <h2 style="margin-bottom: 10px; margin-top: 10px; padding-bottom: 10px;">Group</h2>
+            {% if group_chats %}
+                {% for chat in group_chats %}
+                <div class="col-md-12">
+                    <a class="col-md-10 a-chat btn btn-link" href="{% url 'chat:group_room' chat.chat.id %}" style="padding-left: 0 !important; padding-top: 10px; text-align: left;">{{ chat.chat }}</a>
+                    <span class="dropdown member-option col-md-2" style="margin-bottom: 20px;">
+                        <button class="glyphicon glyphicon-option-horizontal dropdown-toggle btn btn-link" style="padding-top: 10px;" type="button" id="chat-member-option" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                        <div class="dropdown-menu col-md-12" aria-labelledby="chat-member-option" style="background-color: #242526; color: aliceblue;">
+                            <a type="button" class="dropdown-item col-md-12 btn btn-danger" href="{% url 'chat:leave' chat.chat.id %}" style="margin-top: 10px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </span>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="bot-msg col-md-12" style="background-color: #242526; margin-top: 20px; border-radius: 10px; padding-bottom: 10px;">
+            <h2 style="margin-bottom: 10px; margin-top: 10px; padding-bottom: 10px;">Chatbot</h2>
+            <div class="col-md-12" style="padding-bottom: 10px;">
+                <a class="col-md-10 a-chat btn btn-link btn-block" href="/chat/1/" style="text-align: left; padding-left: 0 !important;">{{ chat.chat }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block main_content %}
+    <div class="container-fluid col-md-12" style="background-color: #242526; color: azure; border-radius: 10px; padding-bottom: 10px;">
+        <h1 style="color: aliceblue; padding-left: 15px;">Chat with <a id="receiver-name"></a></h1>
+        <div id="chat-log" class="container-fluid col-md-12" style="background-color: #242526; color: azure; overflow-y: scroll; height:450px;"></div>
+    </div>
+    <div class="col-md-12" style="background-color: #242526; color: azure; border-radius: 10px; margin-top: 20px; padding: 10px 15px 10px 15px;">
+        <input id="chat-message-input" type="text" class="col-md-10" size="90" style="background-color: #242526; color: azure; height: 35px;">
+        <button id="chat-message-submit" type="button" class="btn btn-primary col-md-1 pull-right">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
+                <path d="M5.921 11.9L1.353 8.62a.719.719 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
+            </svg>
+        </button>
+    </div>
+
+    {{ user_id|json_script:"user-id" }}
+
+    <script>
+        var sent_data = JSON.parse("{{data|escapejs}}");
+        
+        var me_id = sent_data['me_id'];
+        var me_name = sent_data['me_name'];
+        var me_avatar = sent_data['me_avatar'];
+
+        var receiver_id = sent_data['receiver_id'];
+        var receiver_name = sent_data['receiver_name'];
+        var receiver_avatar = sent_data['receiver_avatar'];
+
+        var message_holder = document.getElementById("chat-log");
+        var messages = sent_data['messages'];
+        messages = JSON.parse(messages);
+        for (let i = 0; i < messages.length; i++) {
+            console.log(messages[i]);
+            
+            media = document.createElement('div')
+            media.className = "media"
+
+            text_div = document.createElement('div')
+            text_div.className = "media-body container-fluid"
+            text_div.style.backgroundColor = "#4e524e"
+            text_div.style.borderRadius = "10px"
+            text_div.style.width = "auto"
+            text_div.textContent = messages[i]['message_content']
+
+            avt_div = document.createElement('div')
+            
+            avt_a = document.createElement('a')
+            avt_a.href = "/user/" + messages[i]['message_sender_id']
+            avt_img = document.createElement('img')
+            avt_img.className = "media-object"
+            avt_img.src = messages[i]['message_sender_avatar']
+            avt_img.style.height = '25px'
+            avt_img.style.width = '25px'
+            avt_img.style.borderRadius = "10px"
+            avt_a.appendChild(avt_img)
+            
+            if (messages[i]['message_sender_name'] === me_name) {
+                text_div.className = "media-body container-fluid pull-right"
+                text_div.style.backgroundColor = "#0084ff"
+                text_div.style.height = "25px"
+
+                media.appendChild(text_div)
+            } else {
+                avt_div.className = "media-left"
+                avt_div.appendChild(avt_a)
+
+                media.appendChild(avt_div)
+                media.appendChild(text_div)
+            }
+            message_holder.appendChild(media)
+        }
+
+        var chat_header = document.getElementById("receiver-name");
+        chat_header.innerText = receiver_name;
+        chat_header.href = "/user/" + receiver_id;
+
+        const userId = JSON.parse(document.getElementById('user-id').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + userId
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            media = document.createElement('div')
+            media.className = "media"
+
+            text_div = document.createElement('div')
+            text_div.className = "media-body container-fluid"
+            text_div.style.backgroundColor = "#4e524e"
+            text_div.style.borderRadius = "10px"
+            text_div.style.width = "auto"
+            text_div.textContent = data.message
+
+            avt_div = document.createElement('div')
+            
+            avt_a = document.createElement('a')
+            avt_a.href = "/user/" + data.sender_id
+            avt_img = document.createElement('img')
+            avt_img.className = "media-object"
+            avt_img.src = data.sender_avt
+            avt_img.style.height = '25px'
+            avt_img.style.width = '25px'
+            avt_img.style.borderRadius = "10px"
+            avt_a.appendChild(avt_img)
+
+            if (me_name === data.sender_name) {
+                text_div.className = "media-body container-fluid pull-right"
+                text_div.style.backgroundColor = "#0084ff"
+                text_div.style.height = "25px"
+
+                media.appendChild(text_div)
+            } else {
+                avt_div.className = "media-left"
+                avt_div.appendChild(avt_a)
+
+                media.appendChild(avt_div)
+                media.appendChild(text_div)
+            }
+            message_holder.appendChild(media)
+
+            if (data.reply !== null) {
+                media = document.createElement('div')
+                media.className = "media"
+
+                text_div = document.createElement('div')
+                text_div.className = "media-body container-fluid"
+                text_div.style.backgroundColor = "#4e524e"
+                text_div.style.borderRadius = "10px"
+                text_div.style.width = "auto"
+                text_div.textContent = data.reply
+
+                avt_div = document.createElement('div')
+                
+                avt_a = document.createElement('a')
+                avt_a.href = "/user/1/"
+                avt_img = document.createElement('img')
+                avt_img.className = "media-object"
+                avt_img.src = data.bot_avt
+                avt_img.style.height = '25px'
+                avt_img.style.width = '25px'
+                avt_img.style.borderRadius = "10px"
+                avt_a.appendChild(avt_img)
+
+                avt_div.className = "media-left"
+                avt_div.appendChild(avt_a)
+
+                media.appendChild(avt_div)
+                media.appendChild(text_div)
+
+                message_holder.appendChild(media)
+            }
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+{% endblock %}

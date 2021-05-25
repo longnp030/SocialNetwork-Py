@@ -1,0 +1,34 @@
+<script type="text/javascript">
+    $('.likebtn').click(function () {
+        var likePostId = $(this).attr("data-lpostid");
+        var url = "{% url 'post:like' 0 %}".replace("0", likePostId);
+        var postLikeCount = $("b[data-postlike=0]".replace("0", likePostId));
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function (edata) {
+                postLikeCount.val(postLikeCount.val() + 1);
+            }
+        });
+    });
+    $('.unlikebtn').click(function () {
+        var unlikePostId = $(this).attr("data-ulpostid");
+        var url = "{% url 'post:unlike' 0 %}".replace("0", unlikePostId);
+        var postLikeCount = $("b[data-postlike=0]".replace("0", unlikePostId));
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function (edata) {
+                postLikeCount.val(postLikeCount.val() + 1);
+            }
+        })
+    });
+
+    setTimeout(function () {
+        commentSocket.close();
+    }, 1000);
+
+    setTimeout(function () {
+        connect();
+    }, 1000);
+</script>

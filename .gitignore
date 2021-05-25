@@ -1,0 +1,5 @@
+env/
+topic/data/
+topic/models/
+face_recognition/data/
+face_recognition/models/

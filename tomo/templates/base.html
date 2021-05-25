@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!-- LOCAL CSS -->
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <!--<script type="text/javascript" src="{% static 'js/js.js' %}"></script>-->
+    
+    <title>{% block title %}Home{% endblock %} | MyFacebook</title>
+
+    <script type="text/javascript">
+        // A CSRF token is required when making post requests in Django
+        // To be used for making AJAX requests in script.js
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
+    
+    {% block additional_head %}{% endblock %}
+</head>
+
+<body style="padding-top: 70px; background-color: #18191a; padding-right: 0 !important;">
+    <nav class="navbar navbar-inverse navbar-fixed-top col-md-12" role="navigation">
+        <div class="container-fluid col-md-12" style="padding-right: 0 !important;">
+            <div class="container-fluid col-md-3">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/" style="padding-top: 20px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
+                        </svg>
+                    </a>
+                </div>
+                <form class="navbar-form navbar-left" action="" style="padding-top: 6px;">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" style="background-color: #242526; color: #ffffff;">
+                    </div>
+                </form>
+            </div>
+            <div class="container-fluid nav navbar-nav col-md-6">
+
+            </div>
+            <div class="container-fluid col-md-3 collapse navbar-collapse pull-right" id="bs-example-navbar-collapse-1">
+                {% if request.user.is_authenticated %}
+                    <ul class="nav navbar-nav btn-group">
+                        <li class="col-md-4" style="padding-left: 0 !important;"><button class="btn btn-link btn-lg">
+                            <a href="{% url 'user:user_profile' user_id=request.user.id %}">
+                                {% if request.user.avatar %}
+                                    <img src="{{ request.user.avatar.url }}" width="40" height="40" style="border-radius: 20px;">
+                                {% endif %}
+                                {{ request.user }}
+                            </a></button></li>
+
+                        <li class="dropdown create-new-btn col-md-2" style="padding-top: 12px; padding-right: 0 !important; padding-left: 0 !important;">
+                            <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu" style="max-width: fit-content; min-width: inherit; background-color: #242526; color: aliceblue;">
+                                <li class="dropdown-item row" tabindex="-1"><a class="btn btn-link col-md-12" href="{% url 'group:create' %}"  style="color: aliceblue;">
+                                    Create new group
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0z"/>
+                                    </svg>
+                                </a></li>
+                            </ul>
+                        </li>
+                        
+                        <!-- Messenger -->
+                        <li class="dropdown messenger-btn col-md-2" style="padding-top: 12px; padding-right: 0 !important; padding-left: 0 !important;">
+                            <button class="btn btn-link dropdown-toggle pull-left" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
+                                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu pull-left dropdown-menu-left" style="max-width: fit-content; min-width: inherit; background-color: #242526;">                      
+                                <li class="dropdown-submenu nav-item dropdown pull-left">
+                                    <a class="test" tabindex="-1" href="#" style="color: aliceblue;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                        </svg>
+                                    </a>
+                                    <ul class="dropdown-menu pull-left dropdown-menu-left" style="max-width: fit-content; min-width: inherit; background-color: #242526;">
+                                        {% for personnal_chat in personnal_chats %}
+                                            <li><a tabindex="-1" href="{% url 'chat:room' personnal_chat.receiver_id %}" style="color: aliceblue;">{{ personnal_chat.chat }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                                <li class="dropdown-submenu pull-left dropdown-menu-left">
+                                    <a class="test" tabindex="-1" href="#" style="color: aliceblue;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                                            <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                            <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                                            <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                                        </svg>
+                                    </a>
+                                    <ul class="dropdown-menu pull-left dropdown-menu-left" style="max-width: fit-content; min-width: inherit; background-color: #242526;">
+                                        {% for group_chat in group_chats %}
+                                            <li><a tabindex="-1" href="{% url 'chat:group_room' group_chat.chat.id %}" style="color: aliceblue;">{{ group_chat.chat }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                                <li class="dropdown-submenu pull-left dropdown-menu-left"><a tabindex="-1" id="create-group-chat" href="{% url 'chat:create_group_chat' request.user.id %}" style="color: aliceblue;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle-dotted" viewBox="0 0 16 16">
+                                        <path d="M8 0c-.176 0-.35.006-.523.017l.064.998a7.117 7.117 0 0 1 .918 0l.064-.998A8.113 8.113 0 0 0 8 0zM6.44.152c-.346.069-.684.16-1.012.27l.321.948c.287-.098.582-.177.884-.237L6.44.153zm4.132.271a7.946 7.946 0 0 0-1.011-.27l-.194.98c.302.06.597.14.884.237l.321-.947zm1.873.925a8 8 0 0 0-.906-.524l-.443.896c.275.136.54.29.793.459l.556-.831zM4.46.824c-.314.155-.616.33-.905.524l.556.83a7.07 7.07 0 0 1 .793-.458L4.46.824zM2.725 1.985c-.262.23-.51.478-.74.74l.752.66c.202-.23.418-.446.648-.648l-.66-.752zm11.29.74a8.058 8.058 0 0 0-.74-.74l-.66.752c.23.202.447.418.648.648l.752-.66zm1.161 1.735a7.98 7.98 0 0 0-.524-.905l-.83.556c.169.253.322.518.458.793l.896-.443zM1.348 3.555c-.194.289-.37.591-.524.906l.896.443c.136-.275.29-.54.459-.793l-.831-.556zM.423 5.428a7.945 7.945 0 0 0-.27 1.011l.98.194c.06-.302.14-.597.237-.884l-.947-.321zM15.848 6.44a7.943 7.943 0 0 0-.27-1.012l-.948.321c.098.287.177.582.237.884l.98-.194zM.017 7.477a8.113 8.113 0 0 0 0 1.046l.998-.064a7.117 7.117 0 0 1 0-.918l-.998-.064zM16 8a8.1 8.1 0 0 0-.017-.523l-.998.064a7.11 7.11 0 0 1 0 .918l.998.064A8.1 8.1 0 0 0 16 8zM.152 9.56c.069.346.16.684.27 1.012l.948-.321a6.944 6.944 0 0 1-.237-.884l-.98.194zm15.425 1.012c.112-.328.202-.666.27-1.011l-.98-.194c-.06.302-.14.597-.237.884l.947.321zM.824 11.54a8 8 0 0 0 .524.905l.83-.556a6.999 6.999 0 0 1-.458-.793l-.896.443zm13.828.905c.194-.289.37-.591.524-.906l-.896-.443c-.136.275-.29.54-.459.793l.831.556zm-12.667.83c.23.262.478.51.74.74l.66-.752a7.047 7.047 0 0 1-.648-.648l-.752.66zm11.29.74c.262-.23.51-.478.74-.74l-.752-.66c-.201.23-.418.447-.648.648l.66.752zm-1.735 1.161c.314-.155.616-.33.905-.524l-.556-.83a7.07 7.07 0 0 1-.793.458l.443.896zm-7.985-.524c.289.194.591.37.906.524l.443-.896a6.998 6.998 0 0 1-.793-.459l-.556.831zm1.873.925c.328.112.666.202 1.011.27l.194-.98a6.953 6.953 0 0 1-.884-.237l-.321.947zm4.132.271a7.944 7.944 0 0 0 1.012-.27l-.321-.948a6.954 6.954 0 0 1-.884.237l.194.98zm-2.083.135a8.1 8.1 0 0 0 1.046 0l-.064-.998a7.11 7.11 0 0 1-.918 0l-.064.998zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                                    </svg>
+                                </a></li>
+                            </ul>
+                            <script>
+                                console.log("{{ personnal_chats }}")
+                                $(document).ready(function(){
+                                $('.dropdown-submenu a.test').on("click", function(e){
+                                    $(this).next('ul').toggle();
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                });
+                                });
+                            </script>
+                        </li>
+
+                        <!-- Notifications -->
+                        <li class="dropdown notification-btn col-md-2" style="padding-top: 12px;  padding-right: 0 !important; padding-left: 0 !important;">
+                            <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown" id="noti-dropdown" aria-haspopup="true" aria-expanded="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+                                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+                                </svg>
+                                <span class="badge badge-danger" id="notification-badge">4</span>
+                            </button>
+                            <ul class="dropdown-menu" id="notification-tray" role="menu" style="max-width: inherit; min-width: inherit; background-color: #242526; position: relative; right: 0px !important;" aria-labelledby="noti-dropdown">
+                                {% for notification in my_notifications %}
+                                    <li class="dropdown-item row" style="position: relative; right: 0px !important;" tabindex="-1"><a href="{% url 'post:post_view' notification.post.id %}"  style="color: aliceblue;">{{ notification }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+
+                        <li class="dropdown authentication-option col-md-2 pull-right" style="padding-top: 17px;  padding-right: 0 !important; padding-left: 0 !important;">
+                            <button class="btn btn-link dropdown-toggle" type="button" data-toggle="dropdown">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                                    <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                                </svg>
+                            </button>
+                            <ul class="dropdown-menu" style="background-color: #242526;">
+                                <li><a href="/user/logout/" class="nav-item btn-secondary" style="color: aliceblue;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                        <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                                    </svg>
+                                </a></li>
+                            </ul>
+                        </li>
+                {% else %}
+                        <li><a href="/user/register/">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-vector-pen" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M10.646.646a.5.5 0 0 1 .708 0l4 4a.5.5 0 0 1 0 .708l-1.902 1.902-.829 3.313a1.5 1.5 0 0 1-1.024 1.073L1.254 14.746 4.358 4.4A1.5 1.5 0 0 1 5.43 3.377l3.313-.828L10.646.646zm-1.8 2.908l-3.173.793a.5.5 0 0 0-.358.342l-2.57 8.565 8.567-2.57a.5.5 0 0 0 .34-.357l.794-3.174-3.6-3.6z"/>
+                                <path fill-rule="evenodd" d="M2.832 13.228L8 9a1 1 0 1 0-1-1l-4.228 5.168-.026.086.086-.026z"/>
+                            </svg>
+                        </a></li>
+                        <li><a href="/user/login/">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
+                                <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            </svg>
+                        </a></li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid col-md-12" style="padding: 0 !important;">
+        <div role="navigation" class="container-fluid fixed-left col-md-3 pull-left" style="position: fixed;">
+            {% block page_shortcuts %} {% endblock %}
+            {% block messenger %} {% endblock %}
+        </div>
+
+        <!-- MAIN PAGE CONTENT -->
+        {% block full_view %} {% endblock %}
+        <div class="container-fluid col-md-6" style="position: absolute; margin-left: 330px;">
+            {% block main_content %}
+            <div class="container col-md-12" style="margin-bottom:10px;">
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}"
+                        role="alert">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% endblock %}
+        </div>
+
+        <div class="container-fluid col-md-3 pull-right">
+            {% block contact %} {% endblock %}
+            {% block chat_option %} {% endblock %}
+        </div>
+    </div>
+</body>
+
+</html>

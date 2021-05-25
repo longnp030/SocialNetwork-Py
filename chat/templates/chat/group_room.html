@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+
+{% block messenger %}
+<div class="container-fluid col-md-12 messenger" style="padding-left: 0 !important;">
+    <div class="container-fluid col-md-12 inner-chats" style="background-color: #1d1f21; color: azure; padding-bottom: 10px; border-radius: 10px; overflow: auto;">
+        <h1 style="margin-bottom: 20px;">Messenger</h1>
+        <div class="private-msg col-md-12" style="background-color: #242526; border-radius: 10px; padding-bottom: 10px;">
+            <h2 style="margin-bottom: 10px; margin-top: 10px; padding-bottom: 10px;">Private</h2>
+            {% if personnal_chats %}
+                {% for chat in personnal_chats %}
+                <div class="col-md-12" style="padding-bottom: 10px;">
+                    <a class="col-md-10 a-chat btn btn-link btn-block" href="{% url 'chat:room' chat.receiver_id %}" style="text-align: left; padding-left: 0 !important;">{{ chat.chat }}</a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="private-msg col-md-12" style="background-color: #242526; margin-top: 20px; border-radius: 10px; padding-bottom: 10px;">
+            <h2 style="margin-bottom: 10px; margin-top: 10px; padding-bottom: 10px;">Group</h2>
+            {% if group_chats %}
+                {% for chat in group_chats %}
+                <div class="col-md-12">
+                    <a class="col-md-10 a-chat btn btn-link" href="{% url 'chat:group_room' chat.chat.id %}" style="padding-left: 0 !important; padding-top: 10px; text-align: left;">{{ chat.chat }}</a>
+                    <span class="dropdown member-option col-md-2" style="margin-bottom: 20px;">
+                        <button class="glyphicon glyphicon-option-horizontal dropdown-toggle btn btn-link" style="padding-top: 10px;" type="button" id="chat-member-option" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                        <div class="dropdown-menu col-md-12" aria-labelledby="chat-member-option" style="background-color: #242526; color: aliceblue;">
+                            <a type="button" class="dropdown-item col-md-12 btn btn-danger" href="{% url 'chat:leave' chat.chat.id %}" style="margin-top: 10px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                                    <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </span>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<div>
+    <div class="container-fluid col-md-12" style="background-color: #242526; color: azure; border-radius: 10px; padding-bottom: 10px;">
+        <h1 style="margin-bottom: 20px;"><a id="group-chat-name"></a></h1>
+        <div id="chat-log" class="container-fluid col-md-12" style="background-color: #242526; color: azure; overflow-y: scroll; height:450px;"></div>
+    </div>
+    <div class="col-md-12" style="background-color: #242526; color: azure; border-radius: 10px; margin-top: 20px; padding: 10px 15px 10px 15px;">
+        <input class="col-md-10" id="chat-message-input" type="text" size="90" style="background-color: #242526; color: aliceblue; height: 35px;">
+        <button id="chat-message-submit" type="button" class="btn btn-primary col-md-1 pull-right">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply-all-fill" viewBox="0 0 16 16">
+                <path d="M8.021 11.9L3.453 8.62a.719.719 0 0 1 0-1.238L8.021 4.1a.716.716 0 0 1 1.079.619V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"/>
+                <path d="M5.232 4.293a.5.5 0 0 1-.106.7L1.114 7.945a.5.5 0 0 1-.042.028.147.147 0 0 0 0 .252.503.503 0 0 1 .042.028l4.012 2.954a.5.5 0 1 1-.593.805L.539 9.073a1.147 1.147 0 0 1 0-1.946l3.994-2.94a.5.5 0 0 1 .699.106z"/>
+            </svg>
+        </button>
+    </div>
+
+    {{ group_chat_id|json_script:"group-chat-id" }}
+    {{ request.user.id|json_script:"current-user-id" }}
+
+    <script>
+        var sent_data = JSON.parse("{{data|escapejs}}");
+        console.log(sent_data);
+        
+        var me_id = sent_data['me_id'];
+        var me_name = sent_data['me_name'];
+        var me_avatar = sent_data['me_avatar'];
+
+        const message_holder = document.getElementById("chat-log");
+        var messages = sent_data['groupmessages'];
+        messages = JSON.parse(messages);
+        for (let i = 0; i < messages.length; i++) {
+            console.log(messages[i]);
+            
+            media = document.createElement('div')
+            media.className = "media"
+
+            text_div = document.createElement('div')
+            text_div.className = "media-body container-fluid"
+            text_div.style.backgroundColor = "#4e524e"
+            text_div.style.borderRadius = "10px"
+            text_div.style.width = "auto"
+            
+            text_name = document.createElement('h4')
+            text_name.className = "media-heading"
+            text_name.appendChild(document.createTextNode(messages[i]['groupmessage_sender_name']))
+            text_div.appendChild(text_name)
+            
+            text_div.textContent = messages[i]['groupmessage_content']
+
+            avt_div = document.createElement('div')
+            
+            avt_a = document.createElement('a')
+            avt_a.href = "/user/" + messages[i]['groupmessage_sender_id']
+            avt_img = document.createElement('img')
+            avt_img.className = "media-object"
+            avt_img.src = messages[i]['groupmessage_sender_avatar']
+            avt_img.style.height = '25px'
+            avt_img.style.width = '25px'
+            avt_img.style.borderRadius = "10px"
+            avt_a.appendChild(avt_img)
+            
+            if (messages[i]['groupmessage_sender_name'] === me_name) {
+                text_div.className = "media-body container-fluid pull-right"
+                text_div.style.backgroundColor = "#0084ff"
+                text_div.style.height = "25px"
+
+                media.appendChild(text_div)
+            } else {
+                avt_div.className = "media-left"
+                avt_div.appendChild(avt_a)
+
+                media.appendChild(avt_div)
+                media.appendChild(text_div)
+            }
+            message_holder.appendChild(media)
+        }
+        message_holder.scrollTop = message_holder.scrollHeight;
+
+        const chat_header = document.getElementById("group-chat-name");
+        chat_header.innerText = "{{ group_chat_name }}";
+        chat_header.href = "/chat/group/" + "{{ group_chat_id }}";
+
+        const group_chat_id = JSON.parse(document.getElementById('group-chat-id').textContent);
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/group/'
+            + group_chat_id
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+            message_holder.value += ('(' + data.sent_at + ') ' + '(' + data.sender + ') ' + data.message + '\n');
+            message_holder.scrollTop = message_holder.scrollHeight;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const messageSubmit = document.querySelector('#chat-message-submit');
+        messageInputDom.focus();
+        messageInputDom.onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                messageSubmit.click();
+            }
+        };
+        messageSubmit.onclick = function(e) {
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+</div>
+{% endblock %}
+
+{% block chat_option %}
+<div class="container-fluid chat-option col-md-12" id="chat-option" style="padding-right: 0 !important;">
+    <div class="container-fluid col-md-12" style="background-color: #242526; color: azure; padding-bottom: 10px; border-radius: 10px;">
+        <h1 style="color: aliceblue; margin-bottom: 20px;">Chat options</h1>
+        <a type="button" class="btn btn-primary col-md-12 btn-block" id="change-chat-name" style="margin-bottom: 10px;" data-toggle="modal" href="#" data-target="#change-chat-name-modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen-fill" viewBox="0 0 16 16">
+                <path d="M13.498.795l.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001z"/>
+            </svg>
+        </a><br>
+        <div class="modal fade" id="change-chat-name-modal" tabindex="-1" role="dialog" aria-labelledby="change-chat-name-modal-header" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="change-chat-name-modal-header">Change chat name</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype='Multipart/form-data' id="change-chat-name-form">
+                            {% csrf_token %}
+                            {{ changechatnameform }}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="change-chat-name-btn" type="submit" class="btn btn-primary" form="change-chat-name-form">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if is_creator %}
+            <a type="button" class="btn btn-primary col-md-12 btn-block" style="margin-bottom: 10px;" data-toggle="modal" id="addmember" href="#" data-target="#add-member-modal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
+                    <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                    <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+            </a>
+        {% endif %}
+        <div class="modal fade" id="add-member-modal" tabindex="-1" role="dialog" aria-labelledby="add-member-modal-header" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="add-member-modal-header">Add member</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" enctype='Multipart/form-data' id="add-member-form">
+                            {% csrf_token %}
+                            {{ groupchataddmemberform }}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button id="add-member-btn" type="submit" class="btn btn-primary" form="add-member-form">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <a type="button" class="btn btn-danger col-md-12 btn-block" id="leave-group-chat" href="{% url 'chat:leave' group_chat_id %}" onclick="return confirm('Are you sure?')" style="margin-bottom: 10px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-open-fill" viewBox="0 0 16 16">
+                <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"/>
+            </svg>
+        </a>
+        <script>
+            chatSocket.onmessage = function(e) {
+                var data = JSON.parse(e.data);
+                message_holder.value += ('(' + data.sent_at + ')' + '(' + data.sender + ') ' + data.message + '\n');
+                message_holder.scrollTop = message_holder.scrollHeight;
+            };
+            
+            var leave_chat_btn = document.getElementById("leave-group-chat");
+            console.log(leave_chat_btn);
+            leave_chat_btn.onclick = function(e) {
+                chatSocket.send(JSON.stringify({
+                    'message': "{{ me.id }}",
+                    'leave_member_id': "{{ me.id }}",
+                }));
+            };
+        </script>
+    </div>
+
+    <div class="container-fluid member-view col-md-12" id="members" style="margin-top: 20px; background-color: #242526; color: azure; padding-bottom: 10px; border-radius: 10px; height: 365px; overflow: auto;">
+        <h1 style="color: aliceblue; margin-top: 20px; margin-bottom: 10px;">Members</h1>
+        {% for member in groupchat_member %}
+            <a class="col-md-10 member-link" href="{% url 'user:user_profile' member.id %}" style="padding-top: 10px;">
+                {{ member }}</a>
+            {% if is_creator %}
+                <span class="dropdown member-option col-md-2" style="margin-bottom: 20px;">
+                    <button class="glyphicon glyphicon-option-horizontal dropdown-toggle btn btn-link" style="padding-top: 10px;" type="button" id="chat-member-option" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                    <div class="dropdown-menu col-md-12" aria-labelledby="chat-member-option" style="background-color: #242526; color: aliceblue;">
+                        {% if groupchatbox.creator != member %}
+                            <a type="button" class="dropdown-item col-md-12 btn btn-danger" href="{% url 'chat:kick' group_chat_id member.id %}" id="kick-{{ member.id }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-x-fill" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </a>
+                        {% endif %}
+                        {% if member != request.user %}
+                            <a type="button" class="dropdown-item col-md-12 btn btn-warning" href="{% url 'chat:room' member.id %}" style="margin-top: 10px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-chat-quote-fill" viewBox="0 0 16 16">
+                                    <path d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM7.194 6.766a1.688 1.688 0 0 0-.227-.272 1.467 1.467 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 5.734 6C4.776 6 4 6.746 4 7.667c0 .92.776 1.666 1.734 1.666.343 0 .662-.095.931-.26-.137.389-.39.804-.81 1.22a.405.405 0 0 0 .011.59c.173.16.447.155.614-.01 1.334-1.329 1.37-2.758.941-3.706a2.461 2.461 0 0 0-.227-.4zM11 9.073c-.136.389-.39.804-.81 1.22a.405.405 0 0 0 .012.59c.172.16.446.155.613-.01 1.334-1.329 1.37-2.758.942-3.706a2.466 2.466 0 0 0-.228-.4 1.686 1.686 0 0 0-.227-.273 1.466 1.466 0 0 0-.469-.324l-.008-.004A1.785 1.785 0 0 0 10.07 6c-.957 0-1.734.746-1.734 1.667 0 .92.777 1.666 1.734 1.666.343 0 .662-.095.931-.26z"/>
+                                </svg>
+                            </a>
+                        {% endif %}
+                        <a type="button" class="dropdown-item col-md-12 btn btn-info" href="{% url 'user:user_profile' member.id %}" style="margin-top: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-person-badge-fill" viewBox="0 0 16 16">
+                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm4.5 0a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm5 2.755C12.146 12.825 10.623 12 8 12s-4.146.826-5 1.755V14a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-.245z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <script>
+                        var kick_btn = document.getElementById("kick-0".replace("0", "{{ member.id }}"));
+                        console.log(kick_btn);
+                        kick_btn.onclick = function(e) {
+                            chatSocket.send(JSON.stringify({
+                                'message': "{{ member.id }}",
+                                'kick_member_id': "{{ member.id }}",
+                            }));
+                        };
+                    </script>
+                </span>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<script>
+    chatSocket.onmessage = function(e) {
+        var data = JSON.parse(e.data);
+        if (data.kick_member_id !== null && data.kick_member_id === "{{ me.id }}") {
+            message_holder.value += ('You are kicked out from this chat :(\n');
+            message_holder.disabled = true;
+            messageInputDom.disabled = true;
+            messageSubmit.disabled = true;
+            document.getElementById("change-chat-name").disabled = true;
+            document.getElementById("leave-group-chat").disabled = true;
+        } else {
+            message_holder.value += ('(' + data.sent_at + ')' + '(' + data.sender + ') ' + data.message + '\n');
+        }
+        message_holder.scrollTop = message_holder.scrollHeight;
+
+        console.log(data.new_chat_name);
+        if (data.new_chat_name !== null) {
+            document.getElementById("group-chat-name").textContent = data.new_chat_name;
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.getElementById('id_name').focus();
+    document.querySelector('#id_name').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#change-chat-name-btn').click();
+        }
+    };
+    document.querySelector('#change-chat-name-btn').onclick = function(e) {
+        const newNameInput = document.querySelector('#id_name');
+        const name = newNameInput.value;
+        chatSocket.send(JSON.stringify({
+            'message': ' changed group chat name to ' + name,
+            'new_chat_name': name,
+        }));
+        newNameInput.value = '';
+    };
+
+    document.getElementById('id_invitee').focus();
+    document.querySelector('#id_invitee').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#add-member-btn').click();
+        }
+    };
+    document.querySelector('#add-member-btn').onclick = function(e) {
+        const newMember = document.querySelector('#id_invitee');
+        const member = newMember.value;
+        chatSocket.send(JSON.stringify({
+            'message': member,
+            'member_id': member
+        }));
+    };
+</script>
+{% endblock %}
