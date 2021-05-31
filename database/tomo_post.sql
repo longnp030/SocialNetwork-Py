@@ -28,9 +28,11 @@ CREATE TABLE `post` (
   `receiver` int DEFAULT NULL,
   `text` varchar(1000) DEFAULT NULL,
   `images` varchar(45) DEFAULT NULL,
+  `topic` varchar(45) DEFAULT NULL,
   `created` datetime NOT NULL,
   `modified` datetime DEFAULT NULL,
   `group` int DEFAULT NULL,
+  `tagged_friends` int DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `author_idx` (`author`),
@@ -39,7 +41,7 @@ CREATE TABLE `post` (
   CONSTRAINT `author` FOREIGN KEY (`author`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `of_group` FOREIGN KEY (`group`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `post_receiver` FOREIGN KEY (`receiver`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -48,7 +50,7 @@ CREATE TABLE `post` (
 
 LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (7,4,NULL,'Nice to meet you there! Have a nice weekend!!!!',NULL,'2021-01-23 11:03:34','2021-01-23 11:03:34',NULL),(17,3,NULL,'I passed JLPT N3!!!!!!!!!!!',NULL,'2021-01-27 17:12:00','2021-01-30 05:21:17',NULL),(20,3,NULL,'Welcome everyone! Let\'s build the strongest Wibu community on MyFacebook!!',NULL,'2021-02-04 07:42:19','2021-02-04 08:57:26',3),(21,6,NULL,'Hello I\'m new here. My favorite animes are Erased, Gintama and many more. I am watching Horimiya. \r\nI\'m glad to meet you all ^^',NULL,'2021-02-04 12:05:00','2021-02-04 12:21:01',3),(22,5,NULL,'Here are some famous destinations you must visit when going to Tokyo !! Let\'s take a glance\r\n1. The The Imperial Palace\r\n2. The Sensō-ji Temple\r\n3. Ueno Park and Ueno Zoo\r\n4. The Tokyo Skytree',NULL,'2021-02-04 12:55:08','2021-02-04 12:55:43',5);
+INSERT INTO `post` VALUES (7,4,NULL,'Nice to meet you there! Have a nice weekend!!!!',NULL,NULL,'2021-01-23 11:03:34','2021-01-23 11:03:34',NULL,0),(17,3,NULL,'I passed JLPT N3!!!!!!!!!!!',NULL,NULL,'2021-01-27 17:12:00','2021-01-30 05:21:17',NULL,0),(20,3,NULL,'Welcome everyone! Let\'s build the strongest Wibu community on MyFacebook!!',NULL,NULL,'2021-02-04 07:42:19','2021-02-04 08:57:26',3,0),(21,6,NULL,'Hello I\'m new here. My favorite animes are Erased, Gintama and many more. I am watching Horimiya. \r\nI\'m glad to meet you all ^^',NULL,NULL,'2021-02-04 12:05:00','2021-02-04 12:21:01',3,0),(22,5,NULL,'Here are some famous destinations you must visit when going to Tokyo !! Let\'s take a glance\r\n1. The The Imperial Palace\r\n2. The Sensō-ji Temple\r\n3. Ueno Park and Ueno Zoo\r\n4. The Tokyo Skytree',NULL,NULL,'2021-02-04 12:55:08','2021-02-04 15:01:54',5,0),(23,3,NULL,'Hi',NULL,NULL,'2021-02-05 17:41:30','2021-02-05 17:42:30',NULL,0),(38,8,NULL,'KAmekameha',NULL,NULL,'2021-05-14 05:27:37','2021-05-14 05:27:57',NULL,NULL);
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -61,4 +63,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-04 21:25:31
+-- Dump completed on 2021-05-31 21:55:07

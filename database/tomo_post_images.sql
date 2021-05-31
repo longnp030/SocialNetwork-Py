@@ -32,7 +32,7 @@ CREATE TABLE `post_images` (
   KEY `img_img_n_n_idx` (`image_id`),
   CONSTRAINT `img_img_n_n` FOREIGN KEY (`image_id`) REFERENCES `image` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `post_img_n_n` FOREIGN KEY (`post_id`) REFERENCES `post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +41,7 @@ CREATE TABLE `post_images` (
 
 LOCK TABLES `post_images` WRITE;
 /*!40000 ALTER TABLE `post_images` DISABLE KEYS */;
-INSERT INTO `post_images` VALUES (3,17,13),(4,20,27),(5,21,28),(6,22,32),(7,22,29),(8,22,30),(9,22,31);
+INSERT INTO `post_images` VALUES (3,17,13),(4,20,27),(5,21,28),(6,22,32),(7,22,29),(8,22,30),(9,22,31),(10,23,33),(23,38,35);
 /*!40000 ALTER TABLE `post_images` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-04 21:25:33
+-- Dump completed on 2021-05-31 21:55:10

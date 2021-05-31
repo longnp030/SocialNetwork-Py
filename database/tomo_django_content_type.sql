@@ -28,7 +28,7 @@ CREATE TABLE `django_content_type` (
   `model` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `django_content_type_app_label_model_76bd3d3b_uniq` (`app_label`,`model`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `django_content_type` (
 
 LOCK TABLES `django_content_type` WRITE;
 /*!40000 ALTER TABLE `django_content_type` DISABLE KEYS */;
-INSERT INTO `django_content_type` VALUES (2,'admin','logentry'),(4,'auth','group'),(3,'auth','permission'),(13,'chat','chatbox'),(16,'chat','groupchatbox'),(17,'chat','groupmessage'),(18,'chat','joingroupchat'),(14,'chat','message'),(5,'contenttypes','contenttype'),(21,'group','group'),(24,'group','groupadmin'),(26,'group','groupjoininvitation'),(22,'group','groupmember'),(23,'group','grouppost'),(25,'group','joingrouprequest'),(20,'notification','postnotification'),(7,'post','comment'),(19,'post','image'),(8,'post','post'),(15,'post','postimage'),(9,'post','reaction'),(6,'sessions','session'),(12,'user','block'),(11,'user','friendrequest'),(10,'user','friendship'),(1,'user','user');
+INSERT INTO `django_content_type` VALUES (2,'admin','logentry'),(4,'auth','group'),(3,'auth','permission'),(13,'chat','chatbox'),(16,'chat','groupchatbox'),(17,'chat','groupmessage'),(18,'chat','joingroupchat'),(14,'chat','message'),(5,'contenttypes','contenttype'),(21,'group','group'),(24,'group','groupadmin'),(26,'group','groupjoininvitation'),(22,'group','groupmember'),(23,'group','grouppost'),(25,'group','joingrouprequest'),(20,'notification','postnotification'),(7,'post','comment'),(27,'post','friendtaggedinpost'),(19,'post','image'),(8,'post','post'),(15,'post','postimage'),(9,'post','reaction'),(6,'sessions','session'),(12,'user','block'),(11,'user','friendrequest'),(10,'user','friendship'),(1,'user','user');
 /*!40000 ALTER TABLE `django_content_type` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-04 21:25:30
+-- Dump completed on 2021-05-31 21:55:05

@@ -1,3 +1,4 @@
+from post.views import standardize
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.linear_model import LogisticRegression
@@ -62,5 +63,5 @@ model = pickle.load(open("topic/models/linear_classifier.pkl", 'rb'))
 print('Linear Classifier, Accuracy =', np.mean(y_pred == y_test))
 print(classification_report(y_test, y_pred, target_names=list(label_encoder.classes_)[:22]))'''
 
-y_pred = model.predict([input("Văn bản: ")])
+y_pred = model.predict([standardize(input("Văn bản: "))])
 print("Chủ đề dự đoán: ", label_encoder.inverse_transform(y_pred))

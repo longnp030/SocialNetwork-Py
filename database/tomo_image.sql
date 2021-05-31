@@ -31,7 +31,7 @@ CREATE TABLE `image` (
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `owner_idx` (`author`),
   CONSTRAINT `owner` FOREIGN KEY (`author`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +40,7 @@ CREATE TABLE `image` (
 
 LOCK TABLES `image` WRITE;
 /*!40000 ALTER TABLE `image` DISABLE KEYS */;
-INSERT INTO `image` VALUES (13,'post/images/pNone-shige.jpg',3,'2021-01-27 17:21:05'),(16,'post/images/pNone-shige_kPAEcY5.jpg',3,'2021-01-28 01:46:35'),(20,'post/images/pNone-shige_jFYTzFz.jpg',3,'2021-02-02 09:45:13'),(21,'post/images/pNone-shige_genqKjD.jpg',3,'2021-02-02 09:48:07'),(22,'post/images/pNone-shige.png',3,'2021-02-02 09:48:27'),(23,'post/images/pNone-shige_2RBcFFe.png',3,'2021-02-02 09:48:41'),(24,'post/images/pNone-shige_ACTUrze.jpg',3,'2021-02-02 09:48:58'),(25,'post/images/pNone-shige_rmR92Ym.jpg',3,'2021-02-02 09:49:31'),(26,'post/images/pNone-shige_r7p0d1w.jpg',3,'2021-02-02 09:49:51'),(27,'post/images/pNone-shige_uYUCu0Z.jpg',3,'2021-02-04 07:42:32'),(28,'post/images/pNone-philong.jpg',6,'2021-02-04 12:20:47'),(29,'post/images/pNone-aki.jpg',5,'2021-02-04 12:55:21'),(30,'post/images/pNone-aki_tkiS0ro.jpg',5,'2021-02-04 12:55:27'),(31,'post/images/pNone-aki_g7ANjyZ.jpg',5,'2021-02-04 12:55:32'),(32,'post/images/pNone-aki_okZxJaT.jpg',5,'2021-02-04 12:55:37');
+INSERT INTO `image` VALUES (13,'post/images/pNone-shige.jpg',3,'2021-01-27 17:21:05'),(16,'post/images/pNone-shige_kPAEcY5.jpg',3,'2021-01-28 01:46:35'),(20,'post/images/pNone-shige_jFYTzFz.jpg',3,'2021-02-02 09:45:13'),(21,'post/images/pNone-shige_genqKjD.jpg',3,'2021-02-02 09:48:07'),(22,'post/images/pNone-shige.png',3,'2021-02-02 09:48:27'),(23,'post/images/pNone-shige_2RBcFFe.png',3,'2021-02-02 09:48:41'),(24,'post/images/pNone-shige_ACTUrze.jpg',3,'2021-02-02 09:48:58'),(25,'post/images/pNone-shige_rmR92Ym.jpg',3,'2021-02-02 09:49:31'),(26,'post/images/pNone-shige_r7p0d1w.jpg',3,'2021-02-02 09:49:51'),(27,'post/images/pNone-shige_uYUCu0Z.jpg',3,'2021-02-04 07:42:32'),(28,'post/images/pNone-philong.jpg',6,'2021-02-04 12:20:47'),(29,'post/images/pNone-aki.jpg',5,'2021-02-04 12:55:21'),(30,'post/images/pNone-aki_tkiS0ro.jpg',5,'2021-02-04 12:55:27'),(31,'post/images/pNone-aki_g7ANjyZ.jpg',5,'2021-02-04 12:55:32'),(32,'post/images/pNone-aki_okZxJaT.jpg',5,'2021-02-04 12:55:37'),(33,'post/images/pNone-shige_SsCm1xO.png',3,'2021-02-05 17:41:52'),(34,'post/images/pNone-txd.png',8,'2021-05-13 12:16:28'),(35,'post/images/pNone-txd_E5NhnLc.png',8,'2021-05-14 05:22:06');
 /*!40000 ALTER TABLE `image` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-04 21:25:31
+-- Dump completed on 2021-05-31 21:55:05

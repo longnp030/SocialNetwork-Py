@@ -110,7 +110,7 @@ def add_img(request, post_id):
                 topic_model = load_topic_model()
                 label_encoder = LabelEncoder()
                 label_encoder.classes_ = np.load('topic/models/label_classes.npy')
-                post.topic = label_encoder.inverse_transform(topic_model.predict([post.text]))[0]
+                post.topic = label_encoder.inverse_transform(topic_model.predict([standardize(post.text)]))[0]
                 
                 if len(add_img_form.cleaned_data['images']) > 0:
                     fr_ids = []

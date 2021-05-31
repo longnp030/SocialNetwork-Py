@@ -1,5 +1,7 @@
 env/
-topic/data/
-topic/models/
 face_recognition/data/
 face_recognition/models/
+sentiment/data/
+sentiment/models/
+topic/data/
+topic/models/

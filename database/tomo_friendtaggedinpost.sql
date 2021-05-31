@@ -16,32 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `groupchatbox`
+-- Table structure for table `friendtaggedinpost`
 --
 
-DROP TABLE IF EXISTS `groupchatbox`;
+DROP TABLE IF EXISTS `friendtaggedinpost`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `groupchatbox` (
+CREATE TABLE `friendtaggedinpost` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `creator` int NOT NULL,
-  `created` datetime NOT NULL,
-  `name` varchar(100) DEFAULT NULL,
+  `post` int NOT NULL,
+  `friend` int NOT NULL,
+  `tagged` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  KEY `grchat_admin_idx` (`creator`),
-  CONSTRAINT `groupchat_creator` FOREIGN KEY (`creator`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `friend_id_idx` (`friend`),
+  CONSTRAINT `friend_id` FOREIGN KEY (`friend`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `post_id` FOREIGN KEY (`id`) REFERENCES `post` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `groupchatbox`
+-- Dumping data for table `friendtaggedinpost`
 --
 
-LOCK TABLES `groupchatbox` WRITE;
-/*!40000 ALTER TABLE `groupchatbox` DISABLE KEYS */;
-INSERT INTO `groupchatbox` VALUES (3,3,'2021-01-25 05:02:01','Wibu forever'),(5,3,'2021-02-01 08:35:59','Learning Japanese');
-/*!40000 ALTER TABLE `groupchatbox` ENABLE KEYS */;
+LOCK TABLES `friendtaggedinpost` WRITE;
+/*!40000 ALTER TABLE `friendtaggedinpost` DISABLE KEYS */;
+INSERT INTO `friendtaggedinpost` VALUES (3,38,3,'2021-05-14 05:27:57');
+/*!40000 ALTER TABLE `friendtaggedinpost` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +54,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-05-31 21:55:09
+-- Dump completed on 2021-05-31 21:55:12
