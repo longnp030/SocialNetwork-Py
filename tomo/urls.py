@@ -27,5 +27,6 @@ urlpatterns = [
     path('user/', include(('user.urls', 'user'), namespace='user')),
     path('chat/', include(('chat.urls', 'chat'), namespace='chat')),
     path('group/', include(('group.urls', 'group'), namespace='group')),
+    path('search/<str:filename>/', search, name='search'),
     path('', home, name='home'),
 ] + static('images', document_root=settings.POST_IMAGE_DIR)

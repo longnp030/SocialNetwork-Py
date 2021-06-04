@@ -11,9 +11,8 @@
 
     <!-- LOCAL CSS -->
     <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}"/>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
-    <!--<script type="text/javascript" src="{% static 'js/js.js' %}"></script>-->
+    <script type="text/javascript" src="{% static 'js/js.js' %}"></script>
     
     <title>{% block title %}Home{% endblock %} | MyFacebook</title>
 
@@ -22,22 +21,64 @@
         // To be used for making AJAX requests in script.js
         window.CSRF_TOKEN = "{{ csrf_token }}";
     </script>
+
+    <style>
+        canvas { 
+            display: inline-block; 
+            background: #202020; 
+            width: 95%;
+            height: 45%;
+            box-shadow: 0px 0px 10px blue;
+        }
+        #controls {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+            height: 20%;
+            width: 100%;
+        }
+        #record { height: 15vh; }
+        #record.recording { 
+            background: red;
+            background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); 
+            background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); 
+            background: radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); 
+        }
+        #save, #save img { height: 10vh; }
+        #save { opacity: 0.25;}
+        #save[download] { opacity: 1;}
+        #viz {
+            height: 80%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+        @media (orientation: landscape) {
+            body { flex-direction: row;}
+            #controls { flex-direction: column; height: 100%; width: 10%;}
+            #viz { height: 100%; width: 90%;}
+        }
+    </style>
     
     {% block additional_head %}{% endblock %}
 </head>
 
 <body style="padding-top: 70px; background-color: #18191a; padding-right: 0 !important;">
-    <nav class="navbar navbar-inverse navbar-fixed-top col-md-12" role="navigation">
-        <div class="container-fluid col-md-12" style="padding-right: 0 !important;">
+    {% block nav %}
+    <nav class="navbar navbar-inverse navbar-fixed-top col-md-12" role="navigation" style="padding: 0 !important;">
+        <div class="container-fluid col-md-12" style="padding: 0 !important;">
             <div class="container-fluid col-md-3">
                 <div class="navbar-header">
                     <a class="navbar-brand" href="/" style="padding-top: 20px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
                             <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
                         </svg>
                     </a>
                 </div>
-                <form class="navbar-form navbar-left" action="" style="padding-top: 6px;">
+                <form class="navbar-form navbar-left" action="" style="padding-top: 10px;" id="search-form">
                     <div class="form-group">
                         <input type="text" class="form-control" placeholder="Search" style="background-color: #242526; color: #ffffff;">
                     </div>
@@ -173,6 +214,8 @@
             </div>
         </div>
     </nav>
+    {% endblock %}
+
     <div class="container-fluid col-md-12" style="padding: 0 !important;">
         <div role="navigation" class="container-fluid fixed-left col-md-3 pull-left" style="position: fixed;">
             {% block page_shortcuts %} {% endblock %}

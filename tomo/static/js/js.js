@@ -11,7 +11,7 @@ homeSocket.onopen = function(e) {
 }
 
 homeSocket.onclose = function(e) {
-    console.error('Chat socket closed unexpectedly');
+    console.error('Home socket closed unexpectedly');
 };
 
 homeSocket.onmessage = function(e) {

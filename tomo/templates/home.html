@@ -1,8 +1,335 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block main_content %}
 <div class="col-md-12">
     {% if user.is_authenticated %}
+        <button type="button" class="btn btn-info btn-block" id="btn-record" style="margin-top: 18px;" data-toggle="modal" data-target="#record-modal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic" viewBox="0 0 16 16">
+                <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5z"/>
+                <path d="M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0v5zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3z"/>
+            </svg>
+        </button>
+        <div class="modal fade" id="record-modal" tabindex="-1" role="dialog" aria-labelledby="record" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <div id="viz">
+                            <canvas id="analyser" width="1024" height="500"></canvas>
+                            <canvas id="wavedisplay" width="1024" height="500"></canvas>
+                        </div>
+                        <div id="controls">
+                            <a id="record" onclick="toggleRecording(this);">
+                                <img src="{% static 'images/mic.png' %}" alt="mm" height="50" width="50">
+                            </a>
+                            <a id="save" href="#" onclick="start_voice_search(this);">
+                                <img src="{% static 'images/save.png' %}" alt="mm" height="50" width="50">
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function start_voice_search(e) {
+                if (!(e.getAttribute("href") === "#")) {
+                    console.log("yes");
+                    window.location = "/search/" + e.getAttribute("download") + "/"; // "/user/3"; // 
+                }
+            }
+
+            function drawBuffer( width, height, context, data ) {
+                var step = Math.ceil( data.length / width );
+                var amp = height / 2;
+                context.fillStyle = "silver";
+                context.clearRect(0,0,width,height);
+                for(var i=0; i < width; i++){
+                    var min = 1.0;
+                    var max = -1.0;
+                    for (j=0; j<step; j++) {
+                        var datum = data[(i*step)+j]; 
+                        if (datum < min)
+                            min = datum;
+                        if (datum > max)
+                            max = datum;
+                    }
+                    context.fillRect(i,(1+min)*amp,1,Math.max(1,(max-min)*amp));
+                }
+            }
+
+            (function(window){
+
+                var WORKER_PATH = "{% static 'js/recorderWorker.js' %}";
+
+                var Recorder = function(source, cfg){
+                    var config = cfg || {};
+                    var bufferLen = config.bufferLen || 4096;
+                    this.context = source.context;
+                    if(!this.context.createScriptProcessor){
+                        this.node = this.context.createJavaScriptNode(bufferLen, 2, 2);
+                    } else {
+                        this.node = this.context.createScriptProcessor(bufferLen, 2, 2);
+                    }
+                
+                    var worker = new Worker(config.workerPath || WORKER_PATH);
+                    worker.postMessage({
+                        command: 'init',
+                        config: {
+                        sampleRate: this.context.sampleRate
+                        }
+                    });
+                    var recording = false,
+                        currCallback;
+
+                    this.node.onaudioprocess = function(e){
+                        if (!recording) return;
+                        worker.postMessage({
+                            command: 'record',
+                            buffer: [
+                                e.inputBuffer.getChannelData(0),
+                                e.inputBuffer.getChannelData(1)
+                            ]
+                        });
+                    }
+
+                    this.configure = function(cfg){
+                        for (var prop in cfg){
+                            if (cfg.hasOwnProperty(prop)){
+                                config[prop] = cfg[prop];
+                            }
+                        }
+                    }
+
+                    this.record = function(){
+                        recording = true;
+                    }
+
+                    this.stop = function(){
+                        recording = false;
+                    }
+
+                    this.clear = function(){
+                        worker.postMessage({ command: 'clear' });
+                    }
+
+                    this.getBuffers = function(cb) {
+                        currCallback = cb || config.callback;
+                        worker.postMessage({ command: 'getBuffers' })
+                    }
+
+                    this.exportWAV = function(cb, type){
+                        currCallback = cb || config.callback;
+                        type = type || config.type || 'audio/wav';
+                        if (!currCallback) throw new Error('Callback not set');
+                        worker.postMessage({
+                            command: 'exportWAV',
+                            type: type
+                        });
+                    }
+
+                    this.exportMonoWAV = function(cb, type){
+                        currCallback = cb || config.callback;
+                        type = type || config.type || 'audio/wav';
+                        if (!currCallback) throw new Error('Callback not set');
+                        worker.postMessage({
+                            command: 'exportMonoWAV',
+                            type: type
+                        });
+                    }
+
+                    worker.onmessage = function(e){
+                        var blob = e.data;
+                        currCallback(blob);
+                    }
+
+                    source.connect(this.node);
+                    this.node.connect(this.context.destination);   // if the script node is not connected to an output the "onaudioprocess" event is not triggered in chrome.
+                    };
+
+                    Recorder.setupDownload = function(blob, filename){
+                        var url = (window.URL || window.webkitURL).createObjectURL(blob);
+                        console.log(url);
+                        var link = document.getElementById("save");
+                        link.href = url;
+                        link.download = filename || 'output.wav';
+                    }
+
+                window.Recorder = Recorder;
+
+            })(window);
+
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+            var audioContext = new AudioContext();
+            var audioInput = null,
+                realAudioInput = null,
+                inputPoint = null,
+                audioRecorder = null;
+            var rafID = null;
+            var analyserContext = null;
+            var canvasWidth, canvasHeight;
+            var recIndex = 0;
+
+            /* TODO:
+
+            - offer mono option
+            - "Monitor input" switch
+            */
+
+            function saveAudio() {
+                audioRecorder.exportWAV( doneEncoding );
+                // could get mono instead by saying
+                // audioRecorder.exportMonoWAV( doneEncoding );
+            }
+
+            function gotBuffers( buffers ) {
+                var canvas = document.getElementById( "wavedisplay" );
+
+                drawBuffer( canvas.width, canvas.height, canvas.getContext('2d'), buffers[0] );
+
+                // the ONLY time gotBuffers is called is right after a new recording is completed - 
+                // so here's where we should set up the download.
+                audioRecorder.exportWAV( doneEncoding );
+            }
+
+            function doneEncoding( blob ) {
+                Recorder.setupDownload( blob, "{{ me.username }}" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
+                recIndex++;
+            }
+
+            function toggleRecording( e ) {
+                if (e.classList.contains("recording")) {
+                    // stop recording
+                    audioRecorder.stop();
+                    e.classList.remove("recording");
+                    audioRecorder.getBuffers( gotBuffers );
+                } else {
+                    // start recording
+                    if (!audioRecorder)
+                        return;
+                    e.classList.add("recording");
+                    audioRecorder.clear();
+                    audioRecorder.record();
+                }
+            }
+
+            function convertToMono( input ) {
+                var splitter = audioContext.createChannelSplitter(2);
+                var merger = audioContext.createChannelMerger(2);
+
+                input.connect( splitter );
+                splitter.connect( merger, 0, 0 );
+                splitter.connect( merger, 0, 1 );
+                return merger;
+            }
+
+            function cancelAnalyserUpdates() {
+                window.cancelAnimationFrame( rafID );
+                rafID = null;
+            }
+
+            function updateAnalysers(time) {
+                if (!analyserContext) {
+                    var canvas = document.getElementById("analyser");
+                    canvasWidth = canvas.width;
+                    canvasHeight = canvas.height;
+                    analyserContext = canvas.getContext('2d');
+                }
+
+                // analyzer draw code here
+                {
+                    var SPACING = 3;
+                    var BAR_WIDTH = 1;
+                    var numBars = Math.round(canvasWidth / SPACING);
+                    var freqByteData = new Uint8Array(analyserNode.frequencyBinCount);
+
+                    analyserNode.getByteFrequencyData(freqByteData); 
+
+                    analyserContext.clearRect(0, 0, canvasWidth, canvasHeight);
+                    analyserContext.fillStyle = '#F6D565';
+                    analyserContext.lineCap = 'round';
+                    var multiplier = analyserNode.frequencyBinCount / numBars;
+
+                    // Draw rectangle for each frequency bin.
+                    for (var i = 0; i < numBars; ++i) {
+                        var magnitude = 0;
+                        var offset = Math.floor( i * multiplier );
+                        // gotta sum/average the block, or we miss narrow-bandwidth spikes
+                        for (var j = 0; j< multiplier; j++)
+                            magnitude += freqByteData[offset + j];
+                        magnitude = magnitude / multiplier;
+                        var magnitude2 = freqByteData[i * multiplier];
+                        analyserContext.fillStyle = "hsl( " + Math.round((i*360)/numBars) + ", 100%, 50%)";
+                        analyserContext.fillRect(i * SPACING, canvasHeight, BAR_WIDTH, -magnitude);
+                    }
+                }
+                
+                rafID = window.requestAnimationFrame( updateAnalysers );
+            }
+
+            function toggleMono() {
+                if (audioInput != realAudioInput) {
+                    audioInput.disconnect();
+                    realAudioInput.disconnect();
+                    audioInput = realAudioInput;
+                } else {
+                    realAudioInput.disconnect();
+                    audioInput = convertToMono( realAudioInput );
+                }
+
+                audioInput.connect(inputPoint);
+            }
+
+            function gotStream(stream) {
+                inputPoint = audioContext.createGain();
+
+                // Create an AudioNode from the stream.
+                realAudioInput = audioContext.createMediaStreamSource(stream);
+                audioInput = realAudioInput;
+                audioInput.connect(inputPoint);
+
+            //    audioInput = convertToMono( input );
+
+                analyserNode = audioContext.createAnalyser();
+                analyserNode.fftSize = 2048;
+                inputPoint.connect( analyserNode );
+
+                audioRecorder = new Recorder( inputPoint );
+
+                zeroGain = audioContext.createGain();
+                zeroGain.gain.value = 0.0;
+                inputPoint.connect( zeroGain );
+                zeroGain.connect( audioContext.destination );
+                updateAnalysers();
+            }
+
+            function initAudio() {
+                    if (!navigator.getUserMedia)
+                        navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+                    if (!navigator.cancelAnimationFrame)
+                        navigator.cancelAnimationFrame = navigator.webkitCancelAnimationFrame || navigator.mozCancelAnimationFrame;
+                    if (!navigator.requestAnimationFrame)
+                        navigator.requestAnimationFrame = navigator.webkitRequestAnimationFrame || navigator.mozRequestAnimationFrame;
+
+                navigator.getUserMedia(
+                    {
+                        "audio": {
+                            "mandatory": {
+                                "googEchoCancellation": "false",
+                                "googAutoGainControl": "false",
+                                "googNoiseSuppression": "false",
+                                "googHighpassFilter": "false"
+                            },
+                            "optional": []
+                        },
+                    }, gotStream, function(e) {
+                        alert('Error getting audio');
+                        console.log(e);
+                    });
+            }
+
+            window.addEventListener('load', initAudio );
+        </script>
+
         <a class="btn btn-link btn-block" href="{% url 'post:create_post' %}" style="background-color: #242526; border-radius: 10px; margin-top: 10px;"><h3>
             Create new post
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
@@ -12,48 +339,9 @@
 
         <h3 style="color: aliceblue;">Newsfeed</h3>
         {% if posts %}
-            <div  id='more-posts'>
-                {% for post in posts %}
-                    {% include 'post/post_view.html' with view=post.view post_id=post.post.id me=user post=post.post reactions=post.reactions comments=post.comments %}
-                {% endfor %}
-            </div>
-            <div>
-                <a id="lazyLoadLink" 
-                    href="javascript:void(0);" 
-                    data-page="2">Load More Posts</a>
-            </div>
-
-            <script>
-                (function($) {
-                    $('#lazyLoadLink').on('click', function() {
-                        var link = $(this);
-                        var page = link.data('page');
-                        $.ajax({
-                            type: 'post',
-                            url: '',
-                            data: {
-                                'page': page,
-                                'csrfmiddlewaretoken': window.CSRF_TOKEN // from index.html
-                        },
-                        success: function(data) {
-                            // if there are still more pages to load,
-                            // add 1 to the "Load More Posts" link's page data attribute
-                            // else hide the link
-                            if (data.has_next) {
-                                link.data('page', page+1);
-                            } else {
-                                link.hide();
-                            }
-                            // append html to the posts div
-                            $('#more-posts').append(data.posts);
-                        },
-                        error: function(xhr, status, error) {
-                            // shit happens friends!
-                        }
-                        });
-                    });
-                }(jQuery));
-            </script>
+            {% for post in posts %}
+                {% include 'post/post_view.html' with view=post.view post_id=post.post.id me=user post=post.post reactions=post.reactions comments=post.comments %}
+            {% endfor %}
         {% endif %}
     {% endif %}
 </div>
@@ -113,7 +401,7 @@
             <span class="col-md-10" style="color: aliceblue; font-size: larger; padding-top: 5px;">
                 Pages
             </span>
-        </a>
+        </a>       
         <hr class="col-md-12 leftnav-btn" style="padding: 0 !important;">
 
         <h3 style="color: aliceblue;">Your groups</h3>
@@ -138,15 +426,15 @@
 {% block contact %}
 <div class="col-md-12 friends" style="color: azure; margin-top: 10px;">
     <h3 style="margin-top: 0px;">Friends</h3>
-    <!--<div class="friends-status col-md-12" id="friends-status">
-        {#{% if online_users %}
+    <div class="friends-status col-md-12" id="friends-status">
+        {% if online_users %}
             {% for online_user in online_users %}
                 <div class="col-md-12 a-friend" id="online-status-{{ online_user.id }}" onclick="window.location='/user/{{ online_user.id }}'" role="button">
                     <span>{{ online_user }}</span>
                     <span><img src="https://img.icons8.com/emoji/48/000000/green-circle-emoji.png" width="15" height="15"></span>
                 </div>
             {% endfor %}
-        {% endif %}#}
-    </div>-->
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
