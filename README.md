@@ -11,8 +11,6 @@ Phạm vi tìm kiếm : 10 bài viết được lấy từ trang vnexpress.
 * Hồ Văn Thép - 18021206
 * Nguyễn Phi Long - 18020792
 
-## 
-
 ## Necessary libraries
 
 python 3.7.5
