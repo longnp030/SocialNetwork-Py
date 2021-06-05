@@ -12,17 +12,17 @@
         <div class="modal fade" id="record-modal" tabindex="-1" role="dialog" aria-labelledby="record" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="modal-body">
+                    <div class="modal-body" style="background-color: #575c61; width: 600px;">
                         <div id="viz">
                             <canvas id="analyser" width="1024" height="500"></canvas>
                             <canvas id="wavedisplay" width="1024" height="500"></canvas>
                         </div>
                         <div id="controls">
-                            <a id="record" onclick="toggleRecording(this);">
+                            <a id="record" onclick="toggleRecording(this);" role="button">
                                 <img src="{% static 'images/mic.png' %}" alt="mm" height="50" width="50">
                             </a>
-                            <a id="save" href="#" onclick="start_voice_search(this);">
-                                <img src="{% static 'images/save.png' %}" alt="mm" height="50" width="50">
+                            <a id="save" href="#" onclick="startVoiceSearch(this);" role="button">
+                                <img src="{% static 'images/search.png' %}" alt="mm" height="50" width="50">
                             </a>
                         </div>
                     </div>
@@ -30,7 +30,7 @@
             </div>
         </div>
         <script>
-            function start_voice_search(e) {
+            function startVoiceSearch(e) {
                 if (!(e.getAttribute("href") === "#")) {
                     console.log("yes");
                     window.location = "/search/" + e.getAttribute("download") + "/"; // "/user/3"; // 
@@ -153,6 +153,17 @@
                         link.download = filename || 'output.wav';
                     }
 
+                    Recorder.sendAudioToBackend = function(blob){
+                        //var url = (window.URL || window.webkitURL).createObjectURL(blob);
+                        var link = document.getElementById("save");
+                        link.href = "/search/";
+                        console.log(blob);
+                        homeSocket.send(JSON.stringify({
+                            'blob': (new FileReader()).readAsText(blob)
+                        }));
+                        console.log("sent")
+                    }
+
                 window.Recorder = Recorder;
 
             })(window);
@@ -167,7 +178,6 @@
             var rafID = null;
             var analyserContext = null;
             var canvasWidth, canvasHeight;
-            var recIndex = 0;
 
             /* TODO:
 
@@ -192,8 +202,8 @@
             }
 
             function doneEncoding( blob ) {
-                Recorder.setupDownload( blob, "{{ me.username }}" + ((recIndex<10)?"0":"") + recIndex + ".wav" );
-                recIndex++;
+                Recorder.setupDownload( blob, "search.wav" );
+                //Recorder.sendAudioToBackend(blob);
             }
 
             function toggleRecording( e ) {

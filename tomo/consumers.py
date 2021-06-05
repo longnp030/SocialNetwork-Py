@@ -38,10 +38,10 @@ class HomeConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
-    # Receive comment from WebSocket, when user interact with page
+    # Receive status from WebSocket, when user interact with page
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        print(text_data_json)
+        print("received from home:", text_data_json)
         status = text_data_json['status']
         print(status)
 

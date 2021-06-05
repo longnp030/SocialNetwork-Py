@@ -3,7 +3,11 @@
 {% block main_content %}
 <div class="col-md-12" style="color: aliceblue;">
     <h3 style="color: aliceblue;">Search result</h3>
-    <h5 style="color: aliceblue;">You has searched for : <b>{{ predict_word }}</b></h5>
+    <h5 style="color: aliceblue;">You have searched for : <b>
+        {% for predict_word in predict_words %}
+            {{ predict_word }} 
+        {% endfor %}
+    </b></h5>
     {% if posts %}
         {% for post in posts %}
             {% include 'post/post_view.html' with view=post.view post_id=post.post.id me=user post=post.post reactions=post.reactions comments=post.comments %}
