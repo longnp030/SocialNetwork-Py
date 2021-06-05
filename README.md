@@ -1,3 +1,9 @@
+## Bài tập lớn xử lý tiếng nói
+
+Webapp đơn giản mô phỏng lại facebook với chức năng tìm kiếm bằng giọng nói.
+
+Phạm vi tìm kiếm : 10 bài viết được lấy từ trang vnexpress.
+
 ## Necessary libraries
 
 python 3.7.5
@@ -36,7 +42,4 @@ EMAIL_HOST_PASSWORD = '' # Password
 ```bash
 env\scripts\activate
 python manage.py runserver
-```
-
-
 ```

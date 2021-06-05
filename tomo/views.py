@@ -125,7 +125,7 @@ def search(request, filename):
         trimmed_sound.export(f"tomo/voice_search_data/trimmed{i}.wav", format="wav")
 
         # get model
-        class_names = ['con', 'hàng', 'học', 'nhà', 'sinh', 'tuyển', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín', 'có', 'không', 'ngày', 'tháng', 'lớp']
+        class_names = ['con', 'học', 'nhà', 'sinh', 'tuyển', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín', 'có', 'không', 'ngày', 'tháng', 'lớp']
         model = {}
         for key in class_names:
             name = f"tomo/models/model_{key}.model"
@@ -138,7 +138,7 @@ def search(request, filename):
         predict_word = class_names[np.argmax(scores)]
 
         # convert word of num into num (if exist)
-        num = {
+        '''num = {
             'một': 1,
             'hai': 2,
             'ba': 3,
@@ -150,7 +150,7 @@ def search(request, filename):
             'chín': 9,
         }
         if predict_word in num:
-            predict_word = num[predict_word]
+            predict_word = num[predict_word]'''
 
         predict_words.append(predict_word)
         os.remove("tomo/voice_search_data/" + audio_name)
