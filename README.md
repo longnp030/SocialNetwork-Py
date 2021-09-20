@@ -1,16 +1,3 @@
-## Bài tập lớn xử lý tiếng nói
-
-Chủ đề: Giọng nói thành văn bản
-
-Webapp đơn giản mô phỏng lại facebook với chức năng tìm kiếm bằng giọng nói.
-
-Phạm vi tìm kiếm : 10 bài viết được lấy từ trang vnexpress.
-
-## Thành viên nhóm
-
-* Hồ Văn Thép - 18021206
-* Nguyễn Phi Long - 18020792
-
 ## Necessary libraries
 
 python 3.7.5
